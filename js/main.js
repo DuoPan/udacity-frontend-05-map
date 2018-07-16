@@ -1,7 +1,7 @@
 var map;
 var markers = [];
 
-function initMap() {console.log('dfd');
+function initMap() {
   var styles = [
     {
       featureType: 'water',
@@ -77,30 +77,22 @@ function initMap() {console.log('dfd');
 
   // Default locations in Melbourne CBD area.
   var locations = [
-    {title: 'Park Ave Penthouse', location: {lat: 40.7713024, lng: -73.9632393}},
-    {title: 'Chelsea Loft', location: {lat: 40.7444883, lng: -73.9949465}},
-    {title: 'Union Square Open Floor Plan', location: {lat: 40.7347062, lng: -73.9895759}},
-    {title: 'East Village Hip Studio', location: {lat: 40.7281777, lng: -73.984377}},
-    {title: 'TriBeCa Artsy Bachelor Pad', location: {lat: 40.7195264, lng: -74.0089934}},
-    {title: 'Chinatown Homey Space', location: {lat: 40.7180628, lng: -73.9961237}}
+    {title: 'Shopping Center', location: {lat: -37.8102, lng: 144.9628}},
+    {title: 'Queen Victoria Market', location: {lat: -37.8076, lng: 144.9568}},
+    {title: 'University of Melbourne', location: {lat: -37.7964, lng: 144.9612}},
+    {title: 'Flinders Street railway station', location: {lat: -37.8183, lng: 144.9671}},
+    {title: 'St Kilda Beach', location: {lat: -37.8679, lng: 144.9740}},
   ];
 
   var largeInfowindow = new google.maps.InfoWindow();
 
-  // Style the markers a bit. This will be our listing marker icon.
   var defaultIcon = makeMarkerIcon('0091ff');
+  var highlightedIcon = makeMarkerIcon('FFFF24'); // Change color when mouses over the marker.
 
-  // Create a "highlighted location" marker color for when the user
-  // mouses over the marker.
-  var highlightedIcon = makeMarkerIcon('FFFF24');
-
-  // var largeInfowindow = new google.maps.InfoWindow();
-  // The following group uses the location array to create an array of markers on initialize.
+  // Initially create an array of markers.
   for (var i = 0; i < locations.length; i++) {
-    // Get the position from the location array.
     var position = locations[i].location;
     var title = locations[i].title;
-    // Create a marker per location, and put into markers array.
     var marker = new google.maps.Marker({
       position: position,
       title: title,
@@ -108,14 +100,10 @@ function initMap() {console.log('dfd');
       icon: defaultIcon,
       id: i
     });
-    // Push the marker to our array of markers.
     markers.push(marker);
-    // Create an onclick event to open the large infowindow at each marker.
     marker.addListener('click', function() {
       populateInfoWindow(this, largeInfowindow);
     });
-    // Two event listeners - one for mouseover, one for mouseout,
-    // to change the colors back and forth.
     marker.addListener('mouseover', function() {
       this.setIcon(highlightedIcon);
     });
@@ -123,24 +111,47 @@ function initMap() {console.log('dfd');
       this.setIcon(defaultIcon);
     });
   }
-
   document.getElementById('show-listings').addEventListener('click', showListings);
   document.getElementById('hide-listings').addEventListener('click', hideListings);
 }
 
-// This function populates the infowindow when the marker is clicked. We'll only allow
-// one infowindow which will open at the marker that is clicked, and populate based
-// on that markers position.
+// Set content of each info window
 function populateInfoWindow(marker, infowindow) {
   // Check to make sure the infowindow is not already opened on this marker.
   if (infowindow.marker != marker) {
+    infowindow.setContent('');
     infowindow.marker = marker;
-    infowindow.setContent('<div>' + marker.title + '</div>');
-    infowindow.open(map, marker);
-    // Make sure the marker property is cleared if the infowindow is closed.
     infowindow.addListener('closeclick', function() {
       infowindow.marker = null;
     });
+
+    // Add street view below
+    var streetViewService = new google.maps.StreetViewService();
+    var radius = 50;
+    function getStreetView(data, status) {
+      if (status == google.maps.StreetViewStatus.OK) {
+        var nearStreetViewLocation = data.location.latLng;
+        var heading = google.maps.geometry.spherical.computeHeading(
+          nearStreetViewLocation, marker.position);
+          infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+          var panoramaOptions = {
+            position: nearStreetViewLocation,
+            pov: {
+              heading: heading,
+              pitch: 30
+            }
+          };
+        var panorama = new google.maps.StreetViewPanorama(
+          document.getElementById('pano'), panoramaOptions);
+      } else {
+        infowindow.setContent('<div>' + marker.title + '</div>' +
+          '<div>No Street View Found</div>');
+      }
+    }
+    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+
+    // Open the window
+    infowindow.open(map, marker);    
   }
 }
 
