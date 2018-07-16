@@ -1,6 +1,7 @@
 var map;
 var markers = [];
 var polygon = null;
+var placeMarkers = [];
 
 function initMap() {
   var styles = [
@@ -76,6 +77,29 @@ function initMap() {
     styles: styles,
   });
 
+  var timeAutocomplete = new google.maps.places.Autocomplete(
+    (document.getElementById('search-within-time-text')),{
+      componentRestrictions: {
+        country: 'AU'
+      }
+    });
+  var zoomAutocomplete = new google.maps.places.Autocomplete(
+    (document.getElementById('zoom-to-area-text')),{
+      componentRestrictions: {
+        country: 'AU'
+      }
+    });
+  zoomAutocomplete.bindTo('bounds', map);
+  var searchBox = new google.maps.places.Autocomplete(
+    document.getElementById('places-search'),{
+      componentRestrictions: {
+        country: 'AU'
+      }
+    }
+  );
+  searchBox.setBounds(map.getBounds());
+
+
   // Default locations in Melbourne CBD area.
   var locations = [
     {title: 'Shopping Center', location: {lat: -37.8102, lng: 144.9628}},
@@ -125,14 +149,27 @@ function initMap() {
     });
   }
   document.getElementById('show-listings').addEventListener('click', showListings);
-  document.getElementById('hide-listings').addEventListener('click', hideListings);
+  document.getElementById('hide-listings').addEventListener('click', function() {
+    hideMarkers(markers);
+  });
   document.getElementById('toggle-drawing').addEventListener('click', function() {
     toggleDrawing(drawingManager);
   });
+  document.getElementById('zoom-to-area').addEventListener('click', function() {
+    zoomToArea();
+  });
+  document.getElementById('search-within-time').addEventListener('click', function() {
+    searchWithinTime();
+  });
+  searchBox.addListener('places_changed', function() {
+    searchBoxPlaces(this);
+  });
+  document.getElementById('go-places').addEventListener('click', textSearchPlaces);
+
   drawingManager.addListener('overlaycomplete', function(event) {
     if (polygon) {
       polygon.setMap(null);
-      hideListings(markers);
+      hideMarkers(markers);
     }
     drawingManager.setDrawingMode(null);
     polygon = event.overlay;
@@ -195,7 +232,7 @@ function showListings() {
 }
 
 // This function will loop through the listings and hide them all.
-function hideListings() {
+function hideMarkers(markers) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(null);
   }
@@ -239,4 +276,215 @@ function searchWithinPolygon() {
       markers[i].setMap(null);
     }
   }
+}
+
+function zoomToArea() {
+  var geocoder = new google.maps.Geocoder();
+  var address = document.getElementById('zoom-to-area-text').value;
+  if (address == '') {
+    window.alert('You must enter an area, or address.');
+  } else {
+    geocoder.geocode({
+      address: address,
+      componentRestrictions: {country: 'AU'}
+    }, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        map.setZoom(15);
+      } else {
+        window.alert('We could not find that location - try entering a more' +
+            ' specific place.');
+      }
+    });
+  }
+}
+
+function searchWithinTime() {
+  var distanceMatrixService = new google.maps.DistanceMatrixService;
+  var address = document.getElementById('search-within-time-text').value;
+  if (address == '') {
+    window.alert('You must enter an address.');
+  } else {
+    hideMarkers(markers);
+    var origins = [];
+    for (var i = 0; i < markers.length; i++) {
+      origins[i] = markers[i].position;
+    }
+    var destination = address;
+    var mode = document.getElementById('mode').value;
+    distanceMatrixService.getDistanceMatrix({
+      origins: origins,
+      destinations: [destination],
+      travelMode: google.maps.TravelMode[mode],
+      unitSystem: google.maps.UnitSystem.IMPERIAL,
+    }, function(response, status) {
+      if (status !== google.maps.DistanceMatrixStatus.OK) {
+        window.alert('Error was: ' + status);
+      } else {
+        displayMarkersWithinTime(response);
+      }
+    });
+  }
+}
+
+function displayMarkersWithinTime(response) {
+  var maxDuration = document.getElementById('max-duration').value;
+  var origins = response.originAddresses;
+  var destinations = response.destinationAddresses;
+  var atLeastOne = false;
+  for (var i = 0; i < origins.length; i++) {
+    var results = response.rows[i].elements;
+    for (var j = 0; j < results.length; j++) {
+      var element = results[j];
+      if (element.status === "OK") {
+        var distanceText = element.distance.text;
+        var duration = element.duration.value / 60;
+        var durationText = element.duration.text;
+        if (duration <= maxDuration) {
+          markers[i].setMap(map);
+          atLeastOne = true;
+          var infowindow = new google.maps.InfoWindow({
+            content: durationText + ' away, ' + distanceText +
+              '<div><input type=\"button\" value=\"View Route\" onclick =' +
+              '\"displayDirections(&quot;' + origins[i] + '&quot;);\"></input></div>'
+          });
+          infowindow.open(map, markers[i]);
+          markers[i].infowindow = infowindow;
+          google.maps.event.addListener(markers[i], 'click', function() {
+            this.infowindow.close();
+          });
+        }
+      }
+    }
+  }
+  if (!atLeastOne) {
+    window.alert('We could not find any locations within that distance!');
+  }
+}
+
+function displayDirections(origin) {
+  hideMarkers(markers);
+  var directionsService = new google.maps.DirectionsService;
+  var destinationAddress =
+      document.getElementById('search-within-time-text').value;
+  var mode = document.getElementById('mode').value;
+  directionsService.route({
+    origin: origin,
+    destination: destinationAddress,
+    travelMode: google.maps.TravelMode[mode]
+  }, function(response, status) {
+    if (status === google.maps.DirectionsStatus.OK) {
+      var directionsDisplay = new google.maps.DirectionsRenderer({
+        map: map,
+        directions: response,
+        draggable: true,
+        polylineOptions: {
+          strokeColor: 'green'
+        }
+      });
+    } else {
+      window.alert('Directions request failed due to ' + status);
+    }
+  });
+}
+
+function searchBoxPlaces(searchBox) {
+  hideMarkers(placeMarkers);
+  var places = searchBox.getPlaces();
+  if (places.length == 0) {
+    window.alert('We did not find any places matching that search!');
+  } else {
+    createMarkersForPlaces(places);
+  }
+}
+
+function textSearchPlaces() {
+  var bounds = map.getBounds();
+  hideMarkers(placeMarkers);
+  var placesService = new google.maps.places.PlacesService(map);
+  placesService.textSearch({
+    query: document.getElementById('places-search').value,
+    bounds: bounds
+  }, function(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      createMarkersForPlaces(results);
+    }
+  });
+}
+
+function createMarkersForPlaces(places) {
+  var bounds = new google.maps.LatLngBounds();
+  for (var i = 0; i < places.length; i++) {
+    var place = places[i];
+    var icon = {
+      url: place.icon,
+      size: new google.maps.Size(35, 35),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(15, 34),
+      scaledSize: new google.maps.Size(25, 25)
+    };
+    var marker = new google.maps.Marker({
+      map: map,
+      icon: icon,
+      title: place.name,
+      position: place.geometry.location,
+      id: place.place_id
+    });
+    var placeInfoWindow = new google.maps.InfoWindow();
+    marker.addListener('click', function() {
+      if (placeInfoWindow.marker == this) {
+        console.log("This infowindow already is on this marker!");
+      } else {
+        getPlacesDetails(this, placeInfoWindow);
+      }
+    });
+    placeMarkers.push(marker);
+    if (place.geometry.viewport) {
+      bounds.union(place.geometry.viewport);
+    } else {
+      bounds.extend(place.geometry.location);
+    }
+  }
+  map.fitBounds(bounds);
+}
+
+function getPlacesDetails(marker, infowindow) {
+  var service = new google.maps.places.PlacesService(map);
+  service.getDetails({
+    placeId: marker.id
+  }, function(place, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      infowindow.marker = marker;
+      var innerHTML = '<div>';
+      if (place.name) {
+        innerHTML += '<strong>' + place.name + '</strong>';
+      }
+      if (place.formatted_address) {
+        innerHTML += '<br>' + place.formatted_address;
+      }
+      if (place.formatted_phone_number) {
+        innerHTML += '<br>' + place.formatted_phone_number;
+      }
+      if (place.opening_hours) {
+        innerHTML += '<br><br><strong>Hours:</strong><br>' +
+            place.opening_hours.weekday_text[0] + '<br>' +
+            place.opening_hours.weekday_text[1] + '<br>' +
+            place.opening_hours.weekday_text[2] + '<br>' +
+            place.opening_hours.weekday_text[3] + '<br>' +
+            place.opening_hours.weekday_text[4] + '<br>' +
+            place.opening_hours.weekday_text[5] + '<br>' +
+            place.opening_hours.weekday_text[6];
+      }
+      if (place.photos) {
+        innerHTML += '<br><br><img src="' + place.photos[0].getUrl(
+            {maxHeight: 100, maxWidth: 200}) + '">';
+      }
+      innerHTML += '</div>';
+      infowindow.setContent(innerHTML);
+      infowindow.open(map, marker);
+      infowindow.addListener('closeclick', function() {
+        infowindow.marker = null;
+      });
+    }
+  });
 }
