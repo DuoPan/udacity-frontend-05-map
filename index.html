@@ -17,16 +17,22 @@
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="input-group">
-        <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
-        <div class="input-group-append">
-          <button type="button" class="btn btn-outline-secondary">Filter</button>
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          </button>
-          <div class="dropdown-menu">
-            <a class="dropdown-item" href="#">University</a>
-          </div>
+      <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+      <div class="input-group-append">
+        <button type="button" class="btn btn-outline-secondary">Filter</button>
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        </button>
+        <div class="dropdown-menu" style="background-color: black; border-color: gold">
+          <a class="dropdown-item" style="background-color: black;" href="#">University</a>
         </div>
       </div>
+    </div>
+
+    <ul class="list-group" style="color:white;" data-bind="foreach: locs">
+      <li class="list-group-item" style="background-color: black; border-color: white;" data-bind="text: title, click: highlight"></li>
+    </ul>
+
+ 
   </div>
 
   <div id="main">
@@ -45,9 +51,11 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"></script>
 
-
-
+  <!-- <script>
+    
+  </script> -->
   <script src='./main.js'></script>
+  <script src='./map.js'></script>
   <script async defer
       src=
       "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCK5iKaFCJScre3_9LzXHa2uxu3dEPivfM&v=3&callback=initMap">
