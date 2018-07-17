@@ -17,9 +17,9 @@
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <div class="input-group">
-      <input type="text" class="form-control" aria-label="Text input with segmented dropdown button">
+      <input type="text" class="form-control" aria-label="Text input with segmented dropdown button" data-bind="value: Query, valueUpdate: 'keyup'" autocomplete="off">
       <div class="input-group-append">
-        <button type="button" class="btn btn-outline-secondary">Filter</button>
+        <button type="button" class="btn btn-outline-secondary" data-bind="click: filter">Filter</button>
         <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         </button>
         <div class="dropdown-menu" style="background-color: black; border-color: gold">

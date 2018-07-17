@@ -15,7 +15,7 @@ var AppViewModel = function(locations) {
     return {
       title: loc.title, 
       highlight: function(){
-        var i = 0;
+        let i = 0;
         for(; i < markers.length; i++) {
           if (markers[i].title === this.title) {
             if (markers[i].getAnimation() !== null) {
@@ -29,7 +29,40 @@ var AppViewModel = function(locations) {
       }
     };
   }));
-  
+  self.init = self.locs();
+
+  self.Query = ko.observable('');
+
+  self.filter = function() {
+    // 重置locs list
+    self.locs(self.init);
+    // 重置map
+    let i = 0;
+    if (self.Query() === '') {
+      self.resetMap();
+      return;
+    }
+    // 更新list
+    self.locs(self.locs().filter(item => item.title.includes(self.Query())));
+    // 更新marker
+    for(i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+    }
+    self.resetMap();    
+  }
+
+  self.resetMap = function() {
+    self.locs().map((item) => {
+      for(i = 0; i < markers.length; i++) {
+        if (markers[i].title === item.title) {
+          markers[i].setMap(map);
+          break;
+        }
+      }
+    });
+    return;
+  }
+
 
 }
 
