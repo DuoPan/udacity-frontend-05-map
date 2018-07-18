@@ -94,6 +94,33 @@ function initMap() {
     markers.push(marker);
     marker.addListener('click', function() {
       populateInfoWindow(this, largeInfowindow);
+      // console.log(this.position.lat());
+      const proxyurl = "https://cors-anywhere.herokuapp.com/";
+      fetch(proxyurl+'https://samples.openweathermap.org/data/2.5/weather?lat='+this.position.lat()+'&lon='+this.position.lng()+'&appid=b6907d289e10d714a6e88b30761fae22', {mode: 'cors'})
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(myJson) {
+        // console.log(myJson.main.temp);
+        let degree = parseInt(myJson.main.temp)-273.15;
+        document.getElementById('weather').innerText = 'Weather:'+degree+' C';
+      });
+
+
+    //   var url = 'https://samples.openweathermap.org/data/2.5/weather?lat='+this.position.lat()+'&lon='+this.position.lng()+'&appid=b6907d289e10d714a6e88b30761fae22';
+    //   $http({
+    //       method: 'JSONP',
+    //       url: url
+    //   }).
+    //   success(function(status) {
+    //       //your code when success
+    //       console.log(status);
+    //   }).
+    //   error(function(status) {
+    //       //your code when fails
+    //   });
+
+
     });
     marker.addListener('mouseover', function() {
       this.setIcon(highlightedIcon);
