@@ -22,8 +22,11 @@
         <button type="button" class="btn btn-outline-secondary" data-bind="click: filter">Filter</button>
         <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         </button>
-        <div class="dropdown-menu" style="background-color: black; border-color: gold">
-          <a class="dropdown-item" style="background-color: black;" href="#">University</a>
+        <div class="dropdown-menu" style="background-color: black;">
+          <a class="dropdown-item" style="background-color: black; border-width: 1px; border-style: solid; border-color: gold" href="#" data-bind="click: clearFliter">ALL</a>
+          <a class="dropdown-item" style="background-color: black; border-width: 1px; border-style: solid; border-color: gold" href="#" data-bind="click: universityFliter">University</a>
+          <a class="dropdown-item" style="background-color: black; border-width: 1px; border-style: solid; border-color: gold" href="#" data-bind="click: shopFliter">Shops</a>
+          <a class="dropdown-item" style="background-color: black; border-width: 1px; border-style: solid; border-color: gold" href="#" data-bind="click: landmarkFliter">Landmark</a>
         </div>
       </div>
     </div>

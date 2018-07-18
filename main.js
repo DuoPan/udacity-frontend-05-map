@@ -45,13 +45,13 @@ var AppViewModel = function(locations) {
     // 更新list
     self.locs(self.locs().filter(item => item.title.includes(self.Query())));
     // 更新marker
-    for(i = 0; i < markers.length; i++) {
-      markers[i].setMap(null);
-    }
     self.resetMap();    
   }
 
   self.resetMap = function() {
+    for(i = 0; i < markers.length; i++) {
+      markers[i].setMap(null);
+    }
     self.locs().map((item) => {
       for(i = 0; i < markers.length; i++) {
         if (markers[i].title === item.title) {
@@ -63,6 +63,41 @@ var AppViewModel = function(locations) {
     return;
   }
 
+  self.clearFliter = function() {
+    // clear input field
+    self.Query('');
+    // clear self.locs
+    self.locs(self.init);
+    // refresh markers
+    self.resetMap();
+  }
+
+  self.universityFliter = function() {
+    self.Query('[University]');
+    let temp = [];
+    temp.push(self.init[2]);
+    temp.push(self.init[5]);
+    self.locs(temp);
+    self.resetMap();
+  }
+
+  self.shopFliter = function() {
+    self.Query('[Shop]');
+    let temp = [];
+    temp.push(self.init[0]);
+    temp.push(self.init[1]);
+    self.locs(temp);
+    self.resetMap();
+  }
+
+  self.landmarkFliter = function() {
+    self.Query('[Landmark]');
+    let temp = [];
+    temp.push(self.init[3]);
+    temp.push(self.init[4]);
+    self.locs(temp);
+    self.resetMap();
+  }
 
 }
 

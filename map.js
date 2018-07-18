@@ -76,43 +76,9 @@ function initMap() {
     styles: styles,
   });
 
-  // var timeAutocomplete = new google.maps.places.Autocomplete(
-  //   (document.getElementById('search-within-time-text')),{
-  //     componentRestrictions: {
-  //       country: 'AU'
-  //     }
-  //   });
-  // var zoomAutocomplete = new google.maps.places.Autocomplete(
-  //   (document.getElementById('zoom-to-area-text')),{
-  //     componentRestrictions: {
-  //       country: 'AU'
-  //     }
-  //   });
-  // zoomAutocomplete.bindTo('bounds', map);
-  // var searchBox = new google.maps.places.Autocomplete(
-  //   document.getElementById('places-search'),{
-  //     componentRestrictions: {
-  //       country: 'AU'
-  //     }
-  //   }
-  // );
-  // searchBox.setBounds(map.getBounds());
-
   var largeInfowindow = new google.maps.InfoWindow();
   var defaultIcon = makeMarkerIcon('0091ff');
   var highlightedIcon = makeMarkerIcon('FFFF24'); // Change color when mouses over the marker.
-  
-  // Initialize the drawing manager.
-  // var drawingManager = new google.maps.drawing.DrawingManager({
-  //   drawingMode: google.maps.drawing.OverlayType.POLYGON,
-  //   drawingControl: true,
-  //   drawingControlOptions: {
-  //     position: google.maps.ControlPosition.TOP_LEFT,
-  //     drawingModes: [
-  //       google.maps.drawing.OverlayType.POLYGON
-  //     ]
-  //   }
-  // });
 
   // Initially create an array of markers.
   for (var i = 0; i < locations.length; i++) {
@@ -136,37 +102,6 @@ function initMap() {
       this.setIcon(defaultIcon);
     });
   }
-  // document.getElementById('show-listings').addEventListener('click', showListings);
-  // document.getElementById('hide-listings').addEventListener('click', function() {
-  //   hideMarkers(markers);
-  // });
-  // document.getElementById('toggle-drawing').addEventListener('click', function() {
-  //   toggleDrawing(drawingManager);
-  // });
-  // document.getElementById('zoom-to-area').addEventListener('click', function() {
-  //   zoomToArea();
-  // });
-  // document.getElementById('search-within-time').addEventListener('click', function() {
-  //   searchWithinTime();
-  // });
-  // searchBox.addListener('places_changed', function() {
-  //   searchBoxPlaces(this);
-  // });
-  // document.getElementById('go-places').addEventListener('click', textSearchPlaces);
-
-//   drawingManager.addListener('overlaycomplete', function(event) {
-//     if (polygon) {
-//       polygon.setMap(null);
-//       hideMarkers(markers);
-//     }
-//     drawingManager.setDrawingMode(null);
-//     polygon = event.overlay;
-//     polygon.setEditable(true);
-//     searchWithinPolygon();
-//     polygon.getPath().addListener('set_at', searchWithinPolygon);
-//     polygon.getPath().addListener('insert_at', searchWithinPolygon);
-//   });
-// }
 
 // Set content of each info window
 function populateInfoWindow(marker, infowindow) {
@@ -208,49 +143,29 @@ function populateInfoWindow(marker, infowindow) {
   }
 }
 
-// This function will loop through the markers array and display them all.
-function showListings() {
-  var bounds = new google.maps.LatLngBounds();
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
-    bounds.extend(markers[i].position);
+  // This function will loop through the markers array and display them all.
+  function showListings() {
+    var bounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+      bounds.extend(markers[i].position);
+    }
+    map.fitBounds(bounds);
   }
-  map.fitBounds(bounds);
-}
 
-// This function will loop through the listings and hide them all.
-// function hideMarkers(markers) {
-//   for (var i = 0; i < markers.length; i++) {
-//     markers[i].setMap(null);
-//   }
-// }
-
-// This function takes in a COLOR, and then creates a new marker
-// icon of that color. The icon will be 21 px wide by 34 high, have an origin
-// of 0, 0 and be anchored at 10, 34).
-function makeMarkerIcon(markerColor) {
-  var markerImage = new google.maps.MarkerImage(
-    'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-    '|40|_|%E2%80%A2',
-    new google.maps.Size(21, 34),
-    new google.maps.Point(0, 0),
-    new google.maps.Point(10, 34),
-    new google.maps.Size(21,34));
-  return markerImage;
-}
-
-// This shows and hides (respectively) the drawing options.
-// function toggleDrawing(drawingManager) {
-//   if (drawingManager.map) {
-//     drawingManager.setMap(null);
-//     // In case the user drew anything, get rid of the polygon
-//     if (polygon !== null) {
-//       polygon.setMap(null);
-//     }
-//   } else {
-//     drawingManager.setMap(map);
-//   }
-// }
+  // This function takes in a COLOR, and then creates a new marker
+  // icon of that color. The icon will be 21 px wide by 34 high, have an origin
+  // of 0, 0 and be anchored at 10, 34).
+  function makeMarkerIcon(markerColor) {
+    var markerImage = new google.maps.MarkerImage(
+      'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+      '|40|_|%E2%80%A2',
+      new google.maps.Size(21, 34),
+      new google.maps.Point(0, 0),
+      new google.maps.Point(10, 34),
+      new google.maps.Size(21,34));
+    return markerImage;
+  }
 
   showListings();
 }
