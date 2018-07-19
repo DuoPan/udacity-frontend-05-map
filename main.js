@@ -99,6 +99,14 @@ var AppViewModel = function(locations) {
     self.resetMap();
   }
 
+  self.showSidebar = ko.observable(false);
+
+  self.openNav = function() {
+    self.showSidebar(true);
+  }
+  self.closeNav = function() {
+    self.showSidebar(false);
+  }
 }
 
 ko.applyBindings(new AppViewModel(locations));

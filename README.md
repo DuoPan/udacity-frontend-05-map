@@ -5,3 +5,6 @@
 * User can enter in the side bar, then click search button, both list and map will update.
 * Add dropdown and user can select filter type.
 * When click each marker, the weather API will call, and then display on the top of the page. Around 5 seconds.
+
+# Update:
+* Sidebar state switch by knockout.

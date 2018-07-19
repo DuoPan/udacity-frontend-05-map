@@ -14,8 +14,8 @@
 
 <body>
 
-  <div id="mySidenav" class="sidenav">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <div id="mySidenav" class="sidenav" data-bind="style: { width: showSidebar() === true ? '300px' : '0px' }">
+    <a href="javascript:void(0)" class="closebtn" data-bind="click: closeNav">&times;</a>
     <div class="input-group">
       <input type="text" class="form-control" aria-label="Text input with segmented dropdown button" data-bind="value: Query, valueUpdate: 'keyup'" autocomplete="off">
       <div class="input-group-append">
@@ -38,8 +38,8 @@
  
   </div>
 
-  <div id="main">
-    <h2><span id='openIcon' style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776;  </span>Ula's Melbourne Map <span id='weather' style="float: right;"></span></h2>
+  <div id="main" data-bind="style: {marginLeft: showSidebar() === true ? '300px' : '0px' }">
+    <h2><span id='openIcon' style="font-size:30px;cursor:pointer" data-bind="click: openNav ,style: {visibility: showSidebar() ? 'hidden' : 'visible'}">&#9776;  </span>Ula's Melbourne Map <span id='weather' style="float: right;"></span></h2>
     <div id="map"></div>
 
   </div>
@@ -64,16 +64,16 @@
       "https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCK5iKaFCJScre3_9LzXHa2uxu3dEPivfM&v=3&callback=initMap">
   </script>
   <script>
-    function openNav() {
-      document.getElementById("mySidenav").style.width = "300px";
-      document.getElementById("main").style.marginLeft = "300px";
-      document.getElementById("openIcon").style.visibility = "hidden";
-    }
-    function closeNav() {
-      document.getElementById("mySidenav").style.width = "0";
-      document.getElementById("main").style.marginLeft = "0";
-      document.getElementById("openIcon").style.visibility = "visible";
-    }
+    // function openNav() {
+    //   document.getElementById("mySidenav").style.width = "300px";
+    //   document.getElementById("main").style.marginLeft = "300px";
+    //   document.getElementById("openIcon").style.visibility = "hidden";
+    // }
+    // function closeNav() {
+    //   document.getElementById("mySidenav").style.width = "0";
+    //   document.getElementById("main").style.marginLeft = "0";
+    //   document.getElementById("openIcon").style.visibility = "visible";
+    // }
   </script>
 </body>
 
