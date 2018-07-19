@@ -1,3 +1,7 @@
+# Update (20/07/2018):
+* Show info window when clicking item in the list.
+* Filter function ignore uppercase and lowercase. 
+
 # Update (19/07/2018):
 * Sidebar state switch by knockout.
 * Add catch to the async fetch function.

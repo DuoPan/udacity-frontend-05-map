@@ -38,6 +38,7 @@ var AppViewModel = function(locations) {
                   new google.maps.Size(30, 50))
               );
               markers[i].setAnimation(google.maps.Animation.BOUNCE);
+              google.maps.event.trigger(markers[i], "click");
             }
             break;
           }
@@ -59,7 +60,8 @@ var AppViewModel = function(locations) {
       return;
     }
     // 更新list
-    self.locs(self.locs().filter(item => item.title.includes(self.Query())));
+    // self.locs(self.locs().filter(item => item.title.includes(self.Query())));
+    self.locs(self.locs().filter(item => item.title.toLowerCase().includes(self.Query().toLowerCase())));
     // 更新marker
     self.resetMap();    
   }
