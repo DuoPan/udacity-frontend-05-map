@@ -1,7 +1,7 @@
 # Update (19/07/2018):
 * Sidebar state switch by knockout.
 * Add catch to the async fetch function.
-* Markers will shake and become larger when user click its name on the list.
+* Markers will shake and become larger and change color when user click its name on the list.
 
 
 
