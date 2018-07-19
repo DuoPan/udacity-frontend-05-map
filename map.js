@@ -78,7 +78,6 @@ function initMap() {
 
   var largeInfowindow = new google.maps.InfoWindow();
   var defaultIcon = makeMarkerIcon('0091ff');
-  var highlightedIcon = makeMarkerIcon('FFFF24'); // Change color when mouses over the marker.
 
   // Initially create an array of markers.
   for (var i = 0; i < locations.length; i++) {
@@ -94,7 +93,6 @@ function initMap() {
     markers.push(marker);
     marker.addListener('click', function() {
       populateInfoWindow(this, largeInfowindow);
-      // console.log(this.position.lat());
       const proxyurl = "https://cors-anywhere.herokuapp.com/";
       fetch(proxyurl+'https://samples.openweathermap.org/data/2.5/weather?lat='+this.position.lat()+'&lon='+this.position.lng()+'&appid=b6907d289e10d714a6e88b30761fae22', {mode: 'cors'})
       .then(function(response) {
@@ -105,12 +103,6 @@ function initMap() {
         let degree = parseInt(myJson.main.temp)-273.15;
         document.getElementById('weather').innerText = 'Weather:'+degree+' C';
       });
-    });
-    marker.addListener('mouseover', function() {
-      this.setIcon(highlightedIcon);
-    });
-    marker.addListener('mouseout', function() {
-      this.setIcon(defaultIcon);
     });
   }
 

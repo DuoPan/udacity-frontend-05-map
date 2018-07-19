@@ -19,8 +19,24 @@ var AppViewModel = function(locations) {
         for(; i < markers.length; i++) {
           if (markers[i].title === this.title) {
             if (markers[i].getAnimation() !== null) {
+              markers[i].setIcon(
+                new google.maps.MarkerImage(
+                  'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|0091ff|40|_|%E2%80%A2',
+                  new google.maps.Size(21, 34),
+                  new google.maps.Point(0, 0),
+                  new google.maps.Point(10, 34),
+                  new google.maps.Size(21, 34))
+              );
               markers[i].setAnimation(null);
             } else {
+              markers[i].setIcon(
+                new google.maps.MarkerImage(
+                  'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|FF0000|40|_|%E2%80%A2',
+                  new google.maps.Size(30, 50),
+                  new google.maps.Point(0, 0),
+                  new google.maps.Point(10, 34),
+                  new google.maps.Size(30, 50))
+              );
               markers[i].setAnimation(google.maps.Animation.BOUNCE);
             }
             break;
@@ -50,6 +66,14 @@ var AppViewModel = function(locations) {
 
   self.resetMap = function() {
     for(i = 0; i < markers.length; i++) {
+      markers[i].setIcon(
+        new google.maps.MarkerImage(
+          'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|0091ff|40|_|%E2%80%A2',
+          new google.maps.Size(21, 34),
+          new google.maps.Point(0, 0),
+          new google.maps.Point(10, 34),
+          new google.maps.Size(21, 34))
+      );
       markers[i].setMap(null);
     }
     self.locs().map((item) => {
